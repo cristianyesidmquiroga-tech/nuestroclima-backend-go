@@ -1,0 +1,142 @@
+openapi: 3.1.0
+info:
+  title: Nuestro Clima - API de estacion
+  version: 0.1.0
+  description: >
+    Contrato unico del dashboard meteorologico de la finca. Toda
+    implementacion de backend (Go, FastAPI, Node, etc.) cumple este contrato
+    y el mismo frontend la consume sin cambios.
+servers:
+  - url: http://localhost:8080
+paths:
+  /salud:
+    get:
+      summary: Estado del servicio y de la base de datos
+      responses:
+        '200':
+          description: Servicio sano
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  estado: { type: string, example: ok }
+                  db: { type: boolean, example: true }
+        '503':
+          description: Base de datos no disponible
+  /data/report/:
+    post:
+      summary: Ingesta de una lectura de la estacion (cada 60s)
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                PASSKEY: { type: string }
+              additionalProperties: true
+      responses:
+        '200': { description: Lectura aceptada }
+        '400': { description: Sin datos }
+        '403': { description: PASSKEY invalida }
+  /api/actual:
+    get:
+      summary: Ultima lectura registrada
+      responses:
+        '200':
+          description: Lectura mas reciente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Lectura'
+        '204': { description: Aun no hay lecturas }
+  /api/historial:
+    get:
+      summary: Lecturas de las ultimas N horas
+      parameters:
+        - name: horas
+          in: query
+          schema: { type: integer, default: 24, minimum: 1, maximum: 168 }
+      responses:
+        '200':
+          description: Serie de lecturas ascendente por tiempo
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Lectura' }
+  /api/stats:
+    get:
+      summary: Maximos y minimos de las ultimas 24 horas
+      responses:
+        '200':
+          description: Agregados del dia
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StatsDia' }
+  /api/stats/comparative:
+    get:
+      summary: Agregados por semana y por mes
+      responses:
+        '200':
+          description: Agregaciones historicas
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StatsComparativas' }
+components:
+  schemas:
+    Lectura:
+      type: object
+      properties:
+        id: { type: integer }
+        timestamp: { type: string, format: date-time }
+        temp_exterior: { type: number, nullable: true }
+        temp_interior: { type: number, nullable: true }
+        humedad_exterior: { type: number, nullable: true }
+        humedad_interior: { type: number, nullable: true }
+        velocidad_viento: { type: number, nullable: true }
+        rafaga_viento: { type: number, nullable: true }
+        direccion_viento: { type: integer, nullable: true }
+        lluvia_hora: { type: number, nullable: true }
+        lluvia_dia: { type: number, nullable: true }
+        lluvia_evento: { type: number, nullable: true }
+        presion_relativa: { type: number, nullable: true }
+        presion_absoluta: { type: number, nullable: true }
+        uv_index: { type: integer, nullable: true }
+        radiacion_solar: { type: number, nullable: true }
+        punto_rocio: { type: number, nullable: true }
+        sensacion_termica: { type: number, nullable: true }
+    StatsDia:
+      type: object
+      properties:
+        temp_max: { type: number, nullable: true }
+        temp_min: { type: number, nullable: true }
+        hum_max: { type: number, nullable: true }
+        hum_min: { type: number, nullable: true }
+        viento_max: { type: number, nullable: true }
+        rafaga_max: { type: number, nullable: true }
+        lluvia_total: { type: number, nullable: true }
+        uv_max: { type: integer, nullable: true }
+    StatsComparativas:
+      type: object
+      properties:
+        mensual:
+          type: array
+          items:
+            type: object
+            properties:
+              mes: { type: string }
+              temp_max: { type: number, nullable: true }
+              temp_min: { type: number, nullable: true }
+              lluvia_max_diaria: { type: number, nullable: true }
+              estimacion_lluvia_total: { type: number, nullable: true }
+        semanal:
+          type: array
+          items:
+            type: object
+            properties:
+              semana: { type: string }
+              temp_max: { type: number, nullable: true }
+              temp_min: { type: number, nullable: true }
+              lluvia_max_diaria: { type: number, nullable: true }

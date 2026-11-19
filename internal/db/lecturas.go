@@ -40,3 +40,24 @@ func (a *Almacen) UltimaLectura(ctx context.Context) (*modelos.Lectura, error) {
 	}
 	return l, err
 }
+
+func (a *Almacen) Historial(ctx context.Context, horas int) ([]modelos.Lectura, error) {
+	rows, err := a.pool.Query(ctx,
+		`SELECT `+colsLectura+` FROM lecturas
+		 WHERE "timestamp" >= now() - make_interval(hours => $1)
+		 ORDER BY "timestamp" ASC`, horas)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	lecturas := make([]modelos.Lectura, 0)
+	for rows.Next() {
+		l, err := escanearLectura(rows)
+		if err != nil {
+			return nil, err
+		}
+		lecturas = append(lecturas, *l)
+	}
+	return lecturas, rows.Err()
+}

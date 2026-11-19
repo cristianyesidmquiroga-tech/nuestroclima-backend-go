@@ -10,6 +10,7 @@ import (
 type Datos interface {
 	Salud(ctx context.Context) error
 	UltimaLectura(ctx context.Context) (*modelos.Lectura, error)
+	Historial(ctx context.Context, horas int) ([]modelos.Lectura, error)
 }
 
 type Manejador struct {

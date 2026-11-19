@@ -7,12 +7,16 @@ import (
 )
 
 type datosMock struct {
-	saludErr       error
-	ultima         *modelos.Lectura
-	ultimaErr      error
-	historial      []modelos.Lectura
-	historialErr   error
-	historialHoras *int
+	saludErr        error
+	ultima          *modelos.Lectura
+	ultimaErr       error
+	historial       []modelos.Lectura
+	historialErr    error
+	historialHoras  *int
+	statsDia        *modelos.StatsDia
+	statsDiaErr     error
+	comparativas    *modelos.StatsComparativas
+	comparativasErr error
 }
 
 func (d datosMock) Salud(context.Context) error { return d.saludErr }
@@ -26,4 +30,12 @@ func (d datosMock) Historial(_ context.Context, horas int) ([]modelos.Lectura, e
 		*d.historialHoras = horas
 	}
 	return d.historial, d.historialErr
+}
+
+func (d datosMock) StatsDia(context.Context) (*modelos.StatsDia, error) {
+	return d.statsDia, d.statsDiaErr
+}
+
+func (d datosMock) StatsComparativas(context.Context) (*modelos.StatsComparativas, error) {
+	return d.comparativas, d.comparativasErr
 }

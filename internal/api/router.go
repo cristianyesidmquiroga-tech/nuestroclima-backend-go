@@ -34,6 +34,8 @@ func Router(cfg *config.Config, m *Manejador) http.Handler {
 	r.Get("/salud", m.Salud)
 	r.Get("/api/actual", m.Actual)
 	r.Get("/api/historial", m.Historial)
+	r.Get("/api/stats", m.Stats)
+	r.Get("/api/stats/comparative", m.StatsComparativas)
 
 	return r
 }

@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"github.com/cristianyesidmquiroga-tech/nuestroclima-backend-go/internal/config"
+	"github.com/cristianyesidmquiroga-tech/nuestroclima-backend-go/internal/modelos"
 )
 
 type Datos interface {
 	Salud(ctx context.Context) error
+	UltimaLectura(ctx context.Context) (*modelos.Lectura, error)
 }
 
 type Manejador struct {

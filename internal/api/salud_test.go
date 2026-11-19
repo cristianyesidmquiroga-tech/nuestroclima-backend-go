@@ -1,7 +1,6 @@
 package api
 
 import (
-	"context"
 	"encoding/json"
 	"errors"
 	"net/http"
@@ -11,13 +10,9 @@ import (
 	"github.com/cristianyesidmquiroga-tech/nuestroclima-backend-go/internal/config"
 )
 
-type datosFalsos struct{ err error }
-
-func (d datosFalsos) Salud(context.Context) error { return d.err }
-
 func peticionSalud(t *testing.T, err error) (int, map[string]any) {
 	t.Helper()
-	m := NuevoManejador(&config.Config{}, datosFalsos{err: err})
+	m := NuevoManejador(&config.Config{}, datosMock{saludErr: err})
 	rec := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/salud", nil)
 	Router(&config.Config{}, m).ServeHTTP(rec, req)

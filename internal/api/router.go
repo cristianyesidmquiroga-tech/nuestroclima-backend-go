@@ -36,6 +36,8 @@ func Router(cfg *config.Config, m *Manejador) http.Handler {
 	r.Get("/api/historial", m.Historial)
 	r.Get("/api/stats", m.Stats)
 	r.Get("/api/stats/comparative", m.StatsComparativas)
+	r.Post("/data/report/", m.Ingesta)
+	r.Get("/data/report/", m.Ingesta)
 
 	return r
 }

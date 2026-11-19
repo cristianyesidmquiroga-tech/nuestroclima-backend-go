@@ -13,6 +13,7 @@ type Datos interface {
 	Historial(ctx context.Context, horas int) ([]modelos.Lectura, error)
 	StatsDia(ctx context.Context) (*modelos.StatsDia, error)
 	StatsComparativas(ctx context.Context) (*modelos.StatsComparativas, error)
+	GuardarLectura(ctx context.Context, l *modelos.Lectura) error
 }
 
 type Manejador struct {

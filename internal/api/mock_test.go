@@ -17,6 +17,8 @@ type datosMock struct {
 	statsDiaErr     error
 	comparativas    *modelos.StatsComparativas
 	comparativasErr error
+	guardarErr      error
+	guardada        **modelos.Lectura
 }
 
 func (d datosMock) Salud(context.Context) error { return d.saludErr }
@@ -38,4 +40,11 @@ func (d datosMock) StatsDia(context.Context) (*modelos.StatsDia, error) {
 
 func (d datosMock) StatsComparativas(context.Context) (*modelos.StatsComparativas, error) {
 	return d.comparativas, d.comparativasErr
+}
+
+func (d datosMock) GuardarLectura(_ context.Context, l *modelos.Lectura) error {
+	if d.guardada != nil {
+		*d.guardada = l
+	}
+	return d.guardarErr
 }

@@ -32,6 +32,7 @@ func Router(cfg *config.Config, m *Manejador) http.Handler {
 	}))
 
 	r.Get("/salud", m.Salud)
+	r.Get("/api/actual", m.Actual)
 
 	return r
 }

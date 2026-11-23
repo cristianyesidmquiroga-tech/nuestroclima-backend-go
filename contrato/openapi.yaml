@@ -84,6 +84,22 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/StatsComparativas' }
+  /api/integridad/{fecha}:
+    get:
+      summary: Huella (hash) de las lecturas de un dia, para anclar en blockchain
+      parameters:
+        - name: fecha
+          in: path
+          required: true
+          schema: { type: string, example: '20261122' }
+          description: Dia en formato AAAAMMDD o AAAA-MM-DD (hora de Colombia)
+      responses:
+        '200':
+          description: Huella del dia
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IntegridadDia' }
+        '400': { description: Fecha invalida }
 components:
   schemas:
     Lectura:
@@ -107,6 +123,13 @@ components:
         radiacion_solar: { type: number, nullable: true }
         punto_rocio: { type: number, nullable: true }
         sensacion_termica: { type: number, nullable: true }
+    IntegridadDia:
+      type: object
+      properties:
+        fecha: { type: string, example: '20261122' }
+        fecha_num: { type: integer, example: 20261122 }
+        cantidad: { type: integer, example: 1440 }
+        hash: { type: string, description: SHA-256 hex; vacio si no hay lecturas }
     StatsDia:
       type: object
       properties:

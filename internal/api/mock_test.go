@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"time"
 
 	"github.com/cristianyesidmquiroga-tech/nuestroclima-backend-go/internal/modelos"
 )
@@ -13,6 +14,8 @@ type datosMock struct {
 	historial       []modelos.Lectura
 	historialErr    error
 	historialHoras  *int
+	lecturasDia     []modelos.Lectura
+	lecturasDiaErr  error
 	statsDia        *modelos.StatsDia
 	statsDiaErr     error
 	comparativas    *modelos.StatsComparativas
@@ -32,6 +35,10 @@ func (d datosMock) Historial(_ context.Context, horas int) ([]modelos.Lectura, e
 		*d.historialHoras = horas
 	}
 	return d.historial, d.historialErr
+}
+
+func (d datosMock) LecturasDelDia(_ context.Context, _, _ time.Time) ([]modelos.Lectura, error) {
+	return d.lecturasDia, d.lecturasDiaErr
 }
 
 func (d datosMock) StatsDia(context.Context) (*modelos.StatsDia, error) {

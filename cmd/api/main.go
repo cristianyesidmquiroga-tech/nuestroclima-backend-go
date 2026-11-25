@@ -16,6 +16,10 @@ import (
 )
 
 func main() {
+	if esRevisionDeSalud(os.Args) {
+		correrRevisionDeSalud()
+	}
+
 	cfg, err := config.Cargar()
 	if err != nil {
 		log.Fatalf("config: %v", err)

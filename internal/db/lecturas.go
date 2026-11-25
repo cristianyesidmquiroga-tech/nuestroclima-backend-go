@@ -41,13 +41,16 @@ func (a *Almacen) UltimaLectura(ctx context.Context) (*modelos.Lectura, error) {
 	return l, err
 }
 
+// La hora va explicita: la tabla importada de produccion no tiene DEFAULT en "timestamp".
+const sqlGuardarLectura = `
+	INSERT INTO lecturas ("timestamp", temp_exterior, temp_interior, humedad_exterior,
+		humedad_interior, velocidad_viento, rafaga_viento, direccion_viento,
+		lluvia_hora, lluvia_dia, lluvia_evento, presion_relativa, presion_absoluta,
+		uv_index, radiacion_solar, punto_rocio, sensacion_termica, passkey)
+	VALUES (now(),$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'estacion')`
+
 func (a *Almacen) GuardarLectura(ctx context.Context, l *modelos.Lectura) error {
-	_, err := a.pool.Exec(ctx, `
-		INSERT INTO lecturas (temp_exterior, temp_interior, humedad_exterior,
-			humedad_interior, velocidad_viento, rafaga_viento, direccion_viento,
-			lluvia_hora, lluvia_dia, lluvia_evento, presion_relativa, presion_absoluta,
-			uv_index, radiacion_solar, punto_rocio, sensacion_termica, passkey)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'estacion')`,
+	_, err := a.pool.Exec(ctx, sqlGuardarLectura,
 		l.TempExterior, l.TempInterior, l.HumedadExterior, l.HumedadInterior,
 		l.VelocidadViento, l.RafagaViento, l.DireccionViento, l.LluviaHora,
 		l.LluviaDia, l.LluviaEvento, l.PresionRelativa, l.PresionAbsoluta,
